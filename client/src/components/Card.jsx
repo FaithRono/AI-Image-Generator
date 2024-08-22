@@ -1,25 +1,37 @@
-/*import React from 'react';*/
+import React from 'react';
 import PropTypes from 'prop-types';
 import { download } from '../assets';
 import { downloadImage } from '../utils';
 
 const Card = ({ _id, name, prompt, url }) => (
-  <div className="rounded-xl group relative shadow-card hover:shadow-cardhover card">
-    <img
-      className="w-full h-64 object-cover rounded-xl"
-      src={url}
-      alt={prompt}
-    />
-    <div className="group-hover:flex flex-col max-h-[94.5%] hidden absolute bottom-0 left-0 right-0 bg-[#10131f] m-2 p-4 rounded-md">
+  <div className="group relative shadow-card hover:shadow-cardhover transform transition-transform duration-300 hover:scale-105">
+    <div className="w-full h-64 relative overflow-hidden" style={{ clipPath: 'circle(70% at 50% 50%)' }}>
+      <img
+        className="w-full h-full object-cover"
+        src={url}
+        alt={prompt}
+      />
+    </div>
+    <div className="group-hover:flex flex-col max-h-[94.5%] hidden absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 m-2 p-4 rounded-xl transition-opacity duration-300 ease-in-out">
       <p className="text-white text-sm overflow-y-auto prompt">{prompt}</p>
 
       <div className="mt-5 flex justify-between items-center gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full object-cover bg-green-700 flex justify-center items-center text-white text-xs font-bold">{name}</div>
+          <div className="w-7 h-7 rounded-full object-cover bg-green-700 flex justify-center items-center text-white text-xs font-bold">
+            {name[0]} {/* Displaying the first letter of the name */}
+          </div>
           <p className="text-white text-sm">{name}</p>
         </div>
-        <button type="button" onClick={() => downloadImage(_id, url)} className="outline-none bg-transparent border-none">
-          <img src={download} alt="download" className="w-6 h-6 object-contain invert" />
+        <button
+          type="button"
+          onClick={() => downloadImage(_id, url)}
+          className="outline-none bg-transparent border-none"
+        >
+          <img
+            src={download}
+            alt="download"
+            className="w-6 h-6 object-contain invert"
+          />
         </button>
       </div>
     </div>
