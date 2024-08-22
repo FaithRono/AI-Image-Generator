@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { Card, FormField, Loader } from '../components';
 import styled from 'styled-components';
 
@@ -82,6 +82,7 @@ const Answer = styled.p`
   color: #333;
   font-size: 1rem;
 `;
+
 const RenderCards = ({ data, title }) => {
   if (data?.length > 0) {
     return data.map((post) => <Card key={post._id} {...post} />);
@@ -113,25 +114,25 @@ const Home = () => {
 
       if (response.ok) {
         const result = await response.json();
-        // Check if result is an array
+        console.log('Fetched Posts:', result);
+
         if (Array.isArray(result['data'])) {
-          setAllPosts(result['data'].reverse()); // Reverse the array if it is valid
+          setAllPosts(result['data'].reverse());
         } else {
-          throw new Error('Expected an array of posts but received: ' + JSON.stringify(result));
+          console.error('Expected an array of posts, got:', result);
         }
       } else {
-        throw new Error('Failed to fetch posts');
+        console.error('Failed to fetch posts:', response.statusText);
       }
     } catch (err) {
       console.error('Error fetching posts:', err);
-      alert('An error occurred while fetching posts.');
     } finally {
       setLoading(false);
     }
-
   };
-    useEffect(() => {
-    fetchPosts().then(r => console.log(r) );
+
+  useEffect(() => {
+    fetchPosts();
   }, []);
 
   const handleSearchChange = (e) => {
@@ -216,6 +217,7 @@ const Home = () => {
                 />
               )}
             </div>
+
             {showAnswers && (
               <FAQContainer>
                 <CloseButton onClick={handleCloseFAQ}>×</CloseButton>
