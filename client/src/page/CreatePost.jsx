@@ -15,7 +15,7 @@ const CreatePost = () => {
     });
     const [generatingImg, setGeneratingImg] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [recentImages, setRecentImages] = useState([]); 
+    const [recentImages, setRecentImages] = useState([]); // Renamed from recentCreations for clarity
     const [isPromptEditing, setIsPromptEditing] = useState(false);
     const [tempPrompt, setTempPrompt] = useState('');
     const [showRecentCreations, setShowRecentCreations] = useState(false);
@@ -26,7 +26,7 @@ const CreatePost = () => {
     useEffect(() => {
         if (transcript) {
             setTempPrompt(transcript);
-            setForm((prevForm) => ({ ...prevForm, prompt: transcript }));
+            setForm({ ...form, prompt: transcript });
         }
     }, [transcript]);
 
@@ -55,7 +55,7 @@ const CreatePost = () => {
 
     const handleSurpriseMe = () => {
         const randomPrompt = getRandomPrompt(form.prompt);
-        setForm((prevForm) => ({ ...prevForm, prompt: randomPrompt }));
+        setForm({ ...form, prompt: randomPrompt });
         setTempPrompt(randomPrompt);
         setIsPromptEditing(false);
     };
@@ -83,9 +83,10 @@ const CreatePost = () => {
                         prompt: form.prompt,
                         name: form.name,
                     }));
-                    setForm((prevForm) => ({ ...prevForm, photos: newPhotos }));
-                    setRecentImages((prev) => [...newPhotos, ...prev.slice(0, 4)]);
+                    setForm({ ...form, photos: newPhotos });
+                    setRecentImages((prev) => [...newPhotos, ...prev.slice(0, 4)]); // Update recent images with new photos
 
+                    // Save images to MongoDB
                     await Promise.all(newPhotos.map(async (photo) => {
                         try {
                             await fetch('http://localhost:3000/api/images', {
@@ -168,7 +169,7 @@ const CreatePost = () => {
 
     const handlePromptBlur = () => {
         setIsPromptEditing(false);
-        setForm((prevForm) => ({ ...prevForm, prompt: tempPrompt }));
+        setForm({ ...form, prompt: tempPrompt });
     };
 
     const handleVoiceTyping = () => {
@@ -247,25 +248,27 @@ const CreatePost = () => {
 
                 <div className="mb-6">
                     {isPromptEditing ? (
-                        <input
-                            type="text"
-                            name="prompt"
-                            value={tempPrompt}
-                            onChange={handlePromptChange}
-                            onBlur={handlePromptBlur}
-                            className="w-full p-2 border rounded"
-                            placeholder="Describe what you want to see..."
-                        />
+                    <input
+                        labelName="Prompt"
+                        type="text"
+                        name="prompt"
+                        value={tempPrompt}
+                        onChange={(e) => setTempPrompt(e.target.value)}
+                        onBlur={handlePromptBlur}
+                        className="w-full p-2 border rounded"
+                        placeholder="Describe what you want to see..."
+                    />
                     ) : (
                         <button
-                            type="button"
-                            onClick={handlePromptClick}
-                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-2 px-4 rounded shadow-lg transition-all duration-300 transform hover:scale-105 w-full text-left"
+                        type="button"
+                        onClick={handlePromptClick}
+                        className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-2 px-4 rounded shadow-lg transition-all duration-300 transform hover:scale-105 w-full text-left"
                         >
-                            {form.prompt || 'Click here to enter a prompt'}
+                        {form.prompt || 'Click here to enter a prompt'}
                         </button>
                     )}
                 </div>
+
 
                 <div className="flex justify-center mb-6">
                     <button
@@ -276,34 +279,61 @@ const CreatePost = () => {
                     >
                         {generatingImg ? 'Generating...' : 'Generate Image'}
                     </button>
+
+                    <button
+                            type="button"
+                            onClick={handleSurpriseMe}
+                            className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-pink-500 hover:to-purple-500 text-white font-bold py-2 px-4 rounded shadow-lg transition-all duration-300 transform hover:scale-105 mr-4"
+                        >
+                            Surprise Me!
+                        </button>
+
                     <button
                         type="button"
-                        onClick={handleSurpriseMe}
-                        className="bg-gradient-to-r from-yellow-500 to-red-500 hover:from-red-500 hover:to-yellow-500 text-white font-bold py-2 px-4 rounded shadow-lg transition-all duration-300 transform hover:scale-105"
+                        onClick={handleVoiceTyping}
+                        className={`bg-gradient-to-r ${isListening ? 'from-red-500 to-red-700' : 'from-green-500 to-green-700'} hover:from-blue-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded shadow-lg transition-all duration-300 transform hover:scale-105`}
                     >
-                        Surprise Me!
+                        {isListening ? 'Stop Listening' : 'Voice Type'}
                     </button>
                 </div>
 
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex">
-                        <button
-                            type="button"
-                            onClick={handleVoiceTyping}
-                            className={`flex items-center justify-center bg-gradient-to-r ${isListening ? 'from-red-500 to-yellow-500' : 'from-purple-500 to-blue-500'} hover:bg-gradient-to-l text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105`}
-                        >
-                            {isListening ? 'Stop Typing' : 'Start Typing'}
-                        </button>
+                {form.photos.length > 0 && (
+                    <div className="grid grid-cols-2 gap-4">
+                        {form.photos.map((photo, index) => (
+                            <div key={index} className="relative">
+                                <img
+                                    src={photo.url}
+                                    alt={`Generated by ${form.name}`}
+                                    className={`w-full h-64 object-cover rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer ${photosToShare.includes(photo.url) ? 'border-4 border-blue-500' : 'border-4 border-transparent'}`}
+                                    onClick={() => toggleSelectPhoto(photo.url)}
+                                />
+                                <div className="absolute bottom-2 right-2 flex space-x-2">
+                                    <button onClick={() => handleDownloadPhoto(photo.url)} className="bg-blue-500 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-110">
+                                        <FaDownload />
+                                    </button>
+                                    <button onClick={() => handleSavePhoto(photo.url)} className="bg-green-500 text-white p-2 rounded-full shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-110">
+                                        <FaSave />
+                                    </button>
+                                    <button onClick={() => handleDeletePhoto(photo.url)} className="bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-110">
+                                        <FaTrashAlt />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                    <div className="flex">
+                )}
+
+                {loading && <Loader />}
+                {!loading && photosToShare.length > 0 && (
+                    <div className="mt-6 flex justify-center">
                         <button
                             type="submit"
-                            className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:bg-gradient-to-l text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+                            className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-blue-500 hover:to-green-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 transform hover:scale-105"
                         >
-                            Share Your Creation
+                            Share {photosToShare.length} {photosToShare.length === 1 ? 'Image' : 'Images'} to Community
                         </button>
                     </div>
-                </div>
+                )}
             </form>
 
             <div className="mt-12 text-center">

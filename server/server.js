@@ -42,7 +42,7 @@ app.post('/api/images', async (req, res) => {
 // Route to get all images
 app.get('/api/images', async (req, res) => {
     try {
-        const images = await Image.find().sort({ createdAt: -1 }).limit(5);
+        const images = await Image.find().sort({ createdAt: -1 }).limit(50);
         res.json(images);
     } catch (err) {
         res.status(500).json({ error: err.message });
