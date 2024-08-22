@@ -105,7 +105,7 @@ const Home = () => {
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/posts', {
+      const response = await fetch('https://ai-image-generator-u0p2.onrender.com/posts', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

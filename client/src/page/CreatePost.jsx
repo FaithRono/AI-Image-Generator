@@ -34,7 +34,7 @@ const CreatePost = () => {
         const fetchRecentImages = async () => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost:3000/api/images');
+                const response = await fetch('https://ai-image-generator-u0p2.onrender.com/images');
                 if (response.ok) {
                     const images = await response.json();
                     setRecentImages(images);
@@ -89,7 +89,7 @@ const CreatePost = () => {
                     // Save images to MongoDB
                     await Promise.all(newPhotos.map(async (photo) => {
                         try {
-                            await fetch('http://localhost:3000/api/images', {
+                            await fetch('https://ai-image-generator-u0p2.onrender.com/images', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ const CreatePost = () => {
             setLoading(true);
             try {
                 await Promise.all(photosToShare.map(async (url) => {
-                    await fetch('http://localhost:3000/api/posts', {
+                    await fetch('https://ai-image-generator-u0p2.onrender.com/posts', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ const CreatePost = () => {
         setRecentImages(updatedPhotos);
 
         try {
-            await fetch('http://localhost:3000/api/images', {
+            await fetch('https://ai-image-generator-u0p2.onrender.com/images', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
